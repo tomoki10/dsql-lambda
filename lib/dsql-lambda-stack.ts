@@ -1,16 +1,42 @@
 import * as cdk from 'aws-cdk-lib';
 import { Construct } from 'constructs';
-// import * as sqs from 'aws-cdk-lib/aws-sqs';
+import * as iam from 'aws-cdk-lib/aws-iam';
+import * as lambda from 'aws-cdk-lib/aws-lambda';
+import * as nodejs from 'aws-cdk-lib/aws-lambda-nodejs';
 
 export class DsqlLambdaStack extends cdk.Stack {
   constructor(scope: Construct, id: string, props?: cdk.StackProps) {
     super(scope, id, props);
 
-    // The code that defines your stack goes here
+    const dsqlLambda = new nodejs.NodejsFunction(this, 'DsqlLambda', {
+      entry: 'src/index.ts',
+      runtime: lambda.Runtime.NODEJS_LATEST,
+      environment: {
+        DB_USER: 'member',
+        DATABASE: 'postgres',
+        HOST_NAME: process.env.CLUSTER_ID!, // HAK
+        REGION: 'us-east-1',
+        SCHEMA: 'testschema',
+      },
+      initialPolicy: [
+        new iam.PolicyStatement({
+          actions: ['dsql:DbConnect'],
+          resources: [
+            // See: https://docs.aws.amazon.com/aurora-dsql/latest/userguide/using-iam-condition-keys.html
+            this.formatArn({
+              service: 'dsql',
+              region: 'us-east-1',
+              resource: 'cluster',
+              resourceName: '*',
+            }),
+          ],
+        }),
+      ],
+    });
 
-    // example resource
-    // const queue = new sqs.Queue(this, 'DsqlLambdaQueue', {
-    //   visibilityTimeout: cdk.Duration.seconds(300)
-    // });
+    // 一度ロールを作成してからDSQLのロールに登録する
+    new cdk.CfnOutput(this, 'LambdaRoleArn', {
+      value: dsqlLambda.role!.roleArn,
+    });
   }
 }
