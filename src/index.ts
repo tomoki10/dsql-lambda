@@ -13,7 +13,8 @@ const generateToken = async (hostname: string, region: string) => {
     region,
   });
   try {
-    //MEMO: 公式では引数ありになっているが、引数なしで実行しないと動作しない
+    // NOTE: According to the official doc, it requires arguments
+    //       but it does not work unless executed without arguments
     const token = await signer.getDbConnectAuthToken();
     return token;
   } catch (error) {

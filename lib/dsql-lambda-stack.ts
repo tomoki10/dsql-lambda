@@ -34,7 +34,7 @@ export class DsqlLambdaStack extends cdk.Stack {
       ],
     });
 
-    // 一度ロールを作成してからDSQLのロールに登録する
+    // Create the role first and then register it with the DSQL role
     new cdk.CfnOutput(this, 'LambdaRoleArn', {
       value: dsqlLambda.role!.roleArn,
     });
