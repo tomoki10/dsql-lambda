@@ -22,9 +22,14 @@ const generateToken = async (hostname: string, region: string) => {
   }
 };
 
-export const handler = async () => {
+let dataSource: DataSource;
+const getDataSource = async (): Promise<DataSource> => {
+  if (dataSource?.isInitialized) {
+    return dataSource;
+  }
+
   const password = await generateToken(hostname, region);
-  const dataSource = new DataSource({
+  dataSource = new DataSource({
     type: 'postgres',
     host: hostname,
     port: 5432,
@@ -35,6 +40,11 @@ export const handler = async () => {
     ssl: true,
   });
   await dataSource.initialize();
-  const result = await dataSource.query('SELECT * FROM testschema.users');
+  return dataSource;
+};
+
+export const handler = async () => {
+  const ds = await getDataSource();
+  const result = await ds.query('SELECT * FROM testschema.users');
   console.log('SQL result:', result);
 };
