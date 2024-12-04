@@ -6,7 +6,8 @@ Ref: https://docs.aws.amazon.com/aurora-dsql/latest/userguide/using-database-and
 
 ### Lambda Deploy
 ```bash
-% export CLUSTER_ID='xxxxxxxxxx.dsql.us-east-1.on.aws'
+% export CLUSTER_ID='xxxxxxxxxx'
+% export CLUSTER_ENDPOINT='xxxxxxxxxx.dsql.us-east-1.on.aws'
 % npx cdk deploy
 
 Outputs:

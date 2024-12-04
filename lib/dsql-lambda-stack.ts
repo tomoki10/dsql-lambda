@@ -14,7 +14,7 @@ export class DsqlLambdaStack extends cdk.Stack {
       environment: {
         DB_USER: 'member',
         DATABASE: 'postgres',
-        HOST_NAME: process.env.CLUSTER_ID!, // HAK
+        HOST_NAME: process.env.CLUSTER_ENDPOINT!, // HAK
         REGION: 'us-east-1',
         SCHEMA: 'testschema',
       },
@@ -27,7 +27,7 @@ export class DsqlLambdaStack extends cdk.Stack {
               service: 'dsql',
               region: 'us-east-1',
               resource: 'cluster',
-              resourceName: '*',
+              resourceName: process.env.CLUSTER_ID!,
             }),
           ],
         }),
